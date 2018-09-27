@@ -6,6 +6,7 @@ import (
 
 	"github.com/the-maldridge/vInstaller/internal/frontend"
 	_ "github.com/the-maldridge/vInstaller/internal/frontend/prompt"
+	_ "github.com/the-maldridge/vInstaller/internal/frontend/test"
 
 	"github.com/the-maldridge/vInstaller/internal/installer"
 )
