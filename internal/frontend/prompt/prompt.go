@@ -1,21 +1,21 @@
 package prompt
 
 import (
-	"fmt"
 	"bufio"
+	"fmt"
 	"os"
 	"strings"
 
+	"github.com/the-maldridge/vInstaller/internal/config"
 	"github.com/the-maldridge/vInstaller/internal/frontend"
 	"github.com/the-maldridge/vInstaller/internal/sysinfo"
-	"github.com/the-maldridge/vInstaller/internal/config"
 )
 
 // Frontend is a simple frontend that just asks questions in a
 // terminal and builds an installer configuration from that.
 type Frontend struct {
 	sysinfo *sysinfo.System
-	config *config.Config
+	config  *config.Config
 }
 
 // New returns a ready to use PromptFrontend
@@ -35,7 +35,7 @@ func prompt(prompt string) string {
 }
 
 // GetInstallerConfig prompts the user for configuration values.
-func (f *Frontend) GetInstallerConfig() error {
+func (f *Frontend) GetInstallerConfig() (*config.Config, error) {
 	fmt.Println("Welcome to the Void Linux Installer")
 	fmt.Println("")
 	fmt.Println("Please wait while the installer inspects your system...")
@@ -46,7 +46,7 @@ func (f *Frontend) GetInstallerConfig() error {
 	fmt.Println("")
 
 	f.config = new(config.Config)
-	
+
 	f.promptTimeZone()
 	f.promptLocale()
 	f.promptGRUB()
@@ -55,18 +55,33 @@ func (f *Frontend) GetInstallerConfig() error {
 	f.promptUsers()
 
 	fmt.Println(f.config)
-	return nil
+	return f.config, nil
 }
 
 // ConfirmInstallation confirms that the user is ready to proceed with
 // potentially destructive actions.
 func (f *Frontend) ConfirmInstallation() error {
-	return nil
+	fmt.Println("Do you wish to proceed with installation?")
+	proceed := strings.TrimSpace(prompt("Proceed (yes/no): "))
+	if proceed == "yes" {
+		return nil
+	}
+	return frontend.ErrInstallationAborted
 }
 
 // ShowInstallationProgress shows the output of the installation.
-func (f *Frontend) ShowInstallationProgress() {
-
+func (f *Frontend) ShowInstallationProgress(output <-chan string, errors <-chan error, done <-chan bool) {
+	poll := true
+	for poll {
+		select {
+		case o := <-output:
+			fmt.Println(o)
+		case e := <-errors:
+			fmt.Println(e)
+		case <- done:
+			poll = false
+		}
+	}
 }
 
 func (f *Frontend) promptTimeZone() {
@@ -86,7 +101,7 @@ func (f *Frontend) promptGRUB() {
 		}
 		target := strings.TrimSpace(prompt(fmt.Sprintf("Install GRUB to: (/dev/%s)", f.sysinfo.Blk.Disks[0].Name)))
 		if target == "" {
-			f.config.GRUB.InstallTo = "/dev/"+ f.sysinfo.Blk.Disks[0].Name
+			f.config.GRUB.InstallTo = "/dev/" + f.sysinfo.Blk.Disks[0].Name
 			return
 		}
 		f.config.GRUB.InstallTo = target
@@ -110,7 +125,7 @@ func (f *Frontend) promptUsers() {
 	if addUsers == "" || strings.Contains(addUsers, "y") {
 		u := config.User{
 			Username: strings.TrimSpace(prompt("Username: ")),
-			GECOS: strings.TrimSpace(prompt("Name for the user: ")),
+			GECOS:    strings.TrimSpace(prompt("Name for the user: ")),
 			Password: strings.TrimSpace(prompt("Password: ")),
 		}
 		groups := prompt("Additional groups (comma seperated): ")

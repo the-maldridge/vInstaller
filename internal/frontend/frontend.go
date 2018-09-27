@@ -3,14 +3,16 @@ package frontend
 import (
 	"flag"
 	"log"
+
+	"github.com/the-maldridge/vInstaller/internal/config"
 )
 
 // The InstallerFrontend will fetch an installer config, and then
 // confirm that the user is ready to proceed
 type InstallerFrontend interface {
-	GetInstallerConfig() error
+	GetInstallerConfig() (*config.Config, error)
 	ConfirmInstallation() error
-	ShowInstallationProgress()
+	ShowInstallationProgress(<-chan string, <-chan error, <-chan bool)
 }
 
 // Factory creates a new InstallerFrontend and returns it

@@ -48,3 +48,16 @@ func (c Config) String() string {
 
 	return strings.Join(out, "\n")
 }
+
+// Meta contains information about the install and what settings will
+// affect its operation, such as mirrors.
+type Meta struct {
+	Mirror string
+}
+
+// DefaultMeta returns the default metadata which should be safe to use
+func DefaultMeta() *Meta {
+	return &Meta{
+		Mirror: "http://mirrors.servercentral.com/voidlinux/current",
+	}
+}
