@@ -135,6 +135,10 @@ func (i *Installer) Install(target string) {
 		log.Println(err)
 		return
 	}
+	if err := i.enableServices(); err != nil {
+		log.Println(err)
+		return
+	}
 
 	log.Println("System installed")
 
@@ -317,7 +321,7 @@ func (i *Installer) enableServices() error {
 	serviceDir := filepath.Join(i.target, "etc/runit/runsvdir/default/")
 	for _, s := range i.Meta.Services {
 		i.Output <- fmt.Sprintf("  %s", s)
-		if err := os.Symlink(filepath.Join(serviceDir, s), filepath.Join("/etc/sv/", s)); err != nil {
+		if err := os.Symlink(filepath.Join("/etc/sv/", s), filepath.Join(serviceDir, s)); err != nil {
 			i.Errors <- err
 			return err
 		}
@@ -347,6 +351,21 @@ func (i *Installer) addUsers() error {
 	}
 
 	i.Output <- "  User accounts added"
+	if len(i.Config.Users) > 0 {
+		return i.configureSudo()
+	}
+	return nil
+}
+
+func (i *Installer) configureSudo() error {
+	i.Output <- "Configuring /etc/sudoers.d/wheel"
+	log.Println("Configuring /etc/sudoers.d/wheel")
+	config := []byte("%wheel ALL=(ALL) ALL")
+	if err := ioutil.WriteFile(filepath.Join(i.target, "etc/sudoers.d/wheel"), config, 0644); err != nil {
+		i.Errors <- err
+		return err
+	}
+	i.Output <- "  /etc/sudoers.d/wheel has been configured"
 	return nil
 }
 
