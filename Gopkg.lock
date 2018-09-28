@@ -2,14 +2,6 @@
 
 
 [[projects]]
-  branch = "master"
-  digest = "1:6f9339c912bbdda81302633ad7e99a28dfa5a639c864061f1929510a9a64aa74"
-  name = "github.com/dustin/go-humanize"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "9f541cc9db5d55bce703bd99987c9d5cb8eea45e"
-
-[[projects]]
   digest = "1:c76fdfdccfd2c3ae87d7ccb89bb11236c76a27bd1a0f35cdb8bc9cfbda93e11d"
   name = "github.com/jaypipes/ghw"
   packages = ["."]
@@ -17,12 +9,20 @@
   revision = "8fc4046cb80975e821e632e79fc8815ceaa11a0f"
   version = "0.1"
 
+[[projects]]
+  digest = "1:7efe48dea4db6b35dcc15e15394b627247e5b3fb814242de986b746ba8e0abf0"
+  name = "github.com/mattn/go-shellwords"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "02e3cf038dcea8290e44424da473dd12be796a8a"
+  version = "v1.0.3"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/dustin/go-humanize",
     "github.com/jaypipes/ghw",
+    "github.com/mattn/go-shellwords",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

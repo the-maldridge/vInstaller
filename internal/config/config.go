@@ -20,6 +20,8 @@ type Config struct {
 		UseGraphical bool
 		InstallTo    string
 	}
+
+	Filesystems []Filesystem
 }
 
 // User represents a system user
@@ -29,7 +31,6 @@ type User struct {
 	Password string
 	Groups   []string
 }
-
 
 func (c Config) String() string {
 	out := []string{"Your system configuration is as follows:"}
@@ -52,12 +53,25 @@ func (c Config) String() string {
 // Meta contains information about the install and what settings will
 // affect its operation, such as mirrors.
 type Meta struct {
-	Mirror string
+	Mirror   string
+	Services []string
 }
 
 // DefaultMeta returns the default metadata which should be safe to use
 func DefaultMeta() *Meta {
 	return &Meta{
-		Mirror: "http://mirrors.servercentral.com/voidlinux/current",
+		Mirror:   "http://mirrors.servercentral.com/voidlinux/current",
+		Services: []string{"dhcpcd", "sshd"},
 	}
+}
+
+// Filesystem represents a filesystem that is ready to go into the
+// installer, and can be mapped onto /etc/fstab.
+type Filesystem struct {
+	FS      string
+	MountTo string
+	Type    string
+	Options string
+	Dump    int
+	Pass    int
 }

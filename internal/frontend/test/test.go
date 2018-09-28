@@ -24,7 +24,7 @@ func New() (frontend.InstallerFrontend, error) {
 }
 
 func init() {
-	frontend.Register("auto", New)
+	frontend.Register("test", New)
 }
 
 // GetInstallerConfig fetches config from somewhere else to provide to
@@ -44,6 +44,16 @@ func (f *Frontend) GetInstallerConfig() (*config.Config, error) {
 				GECOS:    "Void User",
 				Password: "void",
 				Groups:   []string{"wheel"},
+			},
+		},
+		Filesystems: []config.Filesystem{
+			config.Filesystem{
+				FS: "/dev/hda",
+				MountTo: "/",
+				Type: "ext4",
+				Options: "defaults",
+				Dump: 1,
+				Pass: 1,
 			},
 		},
 	}
