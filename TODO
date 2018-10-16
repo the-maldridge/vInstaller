@@ -1,0 +1,5 @@
+The disks can be with a formatter module that understands how to build
+system layouts,  and then  the frontend  needs to  be able  to present
+partitions the user  needs to assign and partitions on  the disk.  For
+"custom" layouts the  frontend needs to invoke a  partitioner and then
+provide a way to add partitions based on the physical layout.
